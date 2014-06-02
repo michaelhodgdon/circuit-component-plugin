@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>CQ Component Plugin</title>
+
+		<meta name="description" content="Code More, Configure Less">
+		<meta name="author" content="Michael Hodgdon">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+		<script type="text/javascript" src="plugin/prism/js/prism.js"></script>
+		<link rel="stylesheet" href="plugin/prism/css/prism.css">
+
+		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+		<script>
+			if( window.location.search.match( /print-pdf/gi ) ) {
+				var link = document.createElement( 'link' );
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = 'css/print/pdf.css';
+				document.getElementsByTagName( 'head' )[0].appendChild( link );
+			}
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>CQ Component Plugin</h1>
+					<h3>Code More, Configure Less</h3>
+					<p>
+						<small>By Michael Hodgdon</small>
+					</p>
+				</section>
+				<section>
+					<section>
+						<h2>The Components of Yesteryear</h2>
+					</section>
+					
+	                <section>
+						<h3>The Component's Nature</h3>
+						<h4>.content.xml</h4>
+						<pre>
+							<code class="language-markup">
+&lt;jcr:root xmlns:sling=&quot;http://sling.apache.org/jcr/sling/1.0&quot;
+	xmlns:cq=&quot;http://www.day.com/jcr/cq/1.0&quot;
+	xmlns:jcr=&quot;http://www.jcp.org/jcr/1.0&quot;
+	cq:isContainer=&quot;{Boolean}false&quot;
+	jcr:primaryType=&quot;cq:Component&quot;
+	jcr:title=&quot;Title&quot;
+	componentGroup=&quot;Client&quot;/&gt;
+						    </code>
+						</pre>
+					</section>
+					
+	                <section>
+						<h3>The Component's Authorability</h3>
+						<h4>dialog.xml</h4>
+						<pre>
+							<code class="language-markup">
+&lt;jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+	jcr:primaryType="cq:Dialog" title="Title" xtype="dialog"&gt;
+	&lt;items jcr:primaryType="cq:TabPanel"&gt;
+		&lt;items jcr:primaryType="cq:WidgetCollection"&gt;
+			&lt;tab1 jcr:primaryType="cq:Widget" title="Title" xtype="panel"&gt;
+				&lt;items jcr:primaryType="cq:WidgetCollection"&gt;
+					&lt;linkText jcr:primaryType="cq:Widget" fieldLabel="Title"
+						fieldDescription="Title for this component" name="./title"
+						xtype="textfield" /&gt;
+				&lt;/items&gt;
+			&lt;/tab1&gt;
+		&lt;/items&gt;
+	&lt;/items&gt;
+&lt;/jcr:root&gt;
+						    </code>
+						</pre>
+					</section>
+					
+	                <section>
+						<h3>The Component's Editing Context</h3>
+						<h4>_cq_editConfig.xml</h4>
+						<pre>
+							<code class="language-markup">
+&lt;jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          cq:actions="[text:Title ,-,EDITDELETE,-]"
+          cq:layout="editbar"
+          cq:dialogMode="floating"
+          jcr:primaryType="cq:EditConfig"/&gt;
+&lt;/jcr:root&gt;
+						    </code>
+						</pre>
+					</section>
+				
+					<section>
+						<h3>The Component's Business Logic</h3>
+						<h4>Java Backing Bean</h4>
+						<pre>
+							<code class="language-java">
+public class Title {
+	private final String title;
+	
+	public Title(SlingHttpServletRequest request) {
+		ValueMap properties = request.getResource().adaptTo(ValueMap.class);
+		this.title = properties.get("title", "DEFAULT TITLE");
+	}
+
+	public String getTitle() {
+		return title;
+	}
+}
+							</code>
+						</pre>
+	          		</section>
+					
+					<section>
+						<h3>The Component's View</h3>
+						<h4>JSP</h4>
+						<pre>
+							<code class="language-markup">
+&lt;%@include file="/libs/foundation/global.jsp"%&gt;
+&lt;%@ page import="com.client.components.content.title.Title" %&gt;
+
+&lt;c:set var="title" value="&lt;%=new Title(slingRequest) %&gt;"/&gt;
+
+${title.title}
+							</code>
+						</pre>
+	          		</section>
+				
+				</section>
+				
+				<section>
+					<h2>Issues with the current process</h2>
+					<ul>
+						<li class="fragment">Fracturing of Component Definition</li>
+						<li class="fragment">Complicated/Schemaless XML</li>
+						<li class="fragment">Development Process Encouraged By The Complexity</li>
+					</ul>
+				</section>
+				
+				<section>
+					<h2>Introducing....</h2>
+					<h2 class="fragment roll-in">The CQ Component Plugin</h2>
+				</section>
+				
+				<section>
+					<h3>What is the CQ Component Plugin?</h3>
+					<p>
+						The CQ Component Plugin is a Maven plugin that uses annotations inside of the backing beans for components to create the required XML files for a component.</p>
+				</section>
+				
+				<section>
+					<h3>Example</h3>
+					<img src='img/component_example.png'>
+				</section>
+				
+				<section>
+					<h3>How To Use It</h3>
+						<pre>
+							<code class="language-markup">
+&lt;plugin&gt;
+    &lt;groupId&gt;com.citytechinc.cq.cq-component-plugin&lt;/groupId&gt;
+    &lt;artifactId&gt;cq-component-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;2.6f.0&lt;/version&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;goals&gt;
+                &lt;goal&gt;component&lt;/goal&gt;
+            &lt;/goals&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+    &lt;configuration&gt;
+        &lt;componentPathBase&gt;jcr_root/apps/client/components&lt;/componentPathBase&gt;
+        &lt;defaultComponentGroup&gt;Client Group&lt;/defaultComponentGroup&gt;
+    &lt;/configuration&gt;
+&lt;/plugin&gt;
+							</code>
+						</pre>
+				</section>
+				<section>
+					<h2>How it works</h2>
+					<ul>
+						<li class="fragment">Runs after the package is created</li>
+						<li class="fragment">Scans classes/jars for annotations</li>
+						<li class="fragment">Adds dialog.xml, _cq_editConfig.xml, and .content.xml to package</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Examples</h2>
+				</section>
+				<section>
+					<h3>Basic Example</h3>
+					<pre>
+						<code class="language-java">
+@Component(value = "Title")
+public class Title {
+
+	@DialogField(fieldLabel = "Title", fieldDescription = "Our title")
+	private final String title;
+
+	public Title(SlingHttpServletRequest request) {
+		ValueMap properties = request.getResource().adaptTo(ValueMap.class);
+		this.title = properties.get("title", "DEFAULT TITLE");
+	}
+
+	public String getTitle() {
+		return title;
+	}
+}
+						</code>
+					</pre>
+				</section>
+				<section>
+					<h3>Basic Example</h3>
+					<img class="stretch"  src='img/basic_title_dialog.png'>
+				</section>
+				<section>
+					<h3>Complex Widgets and Tabs Example</h3>
+					<pre>
+						<code class="language-java">
+@Component(value = "Complex Example", tabs = { @Tab(title = "First tab"),
+	@Tab(path = "/libs/foundation/components/page/tab_basic.infinity.json"), @Tab(title = "Last tab") })
+public class CqIncludeMix {
+	@DialogField(fieldLabel = "Title", fieldDescription = "Our title", tab = 1)
+	@MultiField
+	private String title;
+
+	@DialogField(fieldLabel = "Image", tab = 3)
+	@Html5SmartImage(disableZoom = true, name = "image", allowCrop=true, allowUpload = false, tab = false, height = 150)
+	private String image;
+}	
+						</code>
+					</pre>
+				</section>
+				<section>
+					<h3>Complex Widgets and Tabs Example</h3>
+					<img src='img/complex-widget/complex-widget-1.png' style="width:40%;">
+					<img src='img/complex-widget/complex-widget-2.png' style="width:40%;">
+					<img src='img/complex-widget/complex-widget-3.png' style="width:40%;">
+				</section>
+				<section>
+					<section>
+						<h3>Extending a Component</h3>
+					</section>
+					<section>
+						<h4>Original Title</h4>
+						<pre>
+							<code class="language-java">
+@Component(value = "Title")
+public class Title {
+
+	@DialogField(fieldLabel = "Title", fieldDescription = "Our title", ranking = 1)
+	private final String title;
+
+	public Title(SlingHttpServletRequest request) {
+		ValueMap properties = request.getResource().adaptTo(ValueMap.class);
+		this.title = properties.get("title", "DEFAULT TITLE");
+	}
+
+	public String getTitle() {
+		return title;
+	}
+}
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h4>Title with Link</h4>
+						<pre>
+							<code class="language-java">
+@Component("Title With Link")
+public class TitleWithLink extends Title {
+
+	@DialogField(fieldLabel = "Link", fieldDescription = "Our link", ranking = 2)
+	@PathField
+	private final String link;
+
+	public TitleWithLink(SlingHttpServletRequest request) {
+		super(request);
+		ValueMap properties = request.getResource().adaptTo(ValueMap.class);
+		this.link = properties.get("link", String.class);
+	}
+
+	public String getLink() {
+		return link;
+	}
+
+}
+						</code>
+					</pre>
+				</section>
+				<section>
+					<h4>Title with Link</h4>
+					<img class="stretch"  src='img/title-with-link.png'>
+				</section>
+			</section>
+			<section>
+				<h2>Reusability</h2>
+				<p>Using objects provides the ability to use dialog elements and authoring experiences across multiple dialogs with no additional effort</p>
+			</section>
+			<section>
+				<h3>A Basic Link</h3>
+				<pre>
+					<code class="language-java">
+public class Link {
+	@DialogField(fieldLabel = "Link Path")
+	@PathField
+	private String linkPath;
+
+	@DialogField(fieldLabel = "Link Text")
+	private String linkText;
+
+	public String getLinkPath() {
+		return linkPath;
+	}
+
+	public void setLinkPath(String linkPath) {
+		this.linkPath = linkPath;
+	}
+
+	public String getLinkText() {
+		return linkText;
+	}
+
+	public void setLinkText(String linkText) {
+		this.linkText = linkText;
+	}
+}
+					</code>
+				</pre>
+			</section>
+			<section>
+				<section>
+					<h3>A Link With a Title</h3>
+					<pre>
+						<code class="language-java">
+@Component(value = "Single Link")
+public class SingleLink {
+
+	@DialogField(fieldLabel = "Title")
+	private final String title;
+
+	@DialogField
+	@DialogFieldSet
+	private final Link link;
+
+	public SingleLink(SlingHttpServletRequest request) {
+		ValueMap properties = request.getResource().adaptTo(ValueMap.class);
+		title = properties.get("title", "DEFAULT TITLE");
+		String path = properties.get("linkPath", "/content/defualtpath");
+		String linkText = properties.get("linkText", "DEFAULT LINK TITLE");
+		link = new Link();
+		link.setLinkPath(path);
+		link.setLinkText(linkText);
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public Link getLink() {
+		return link;
+	}
+}						
+						</code>
+					</pre>
+				</section>
+				<section>
+					<h4>A Link With a Title</h4>
+					<img class="stretch"  src='img/link-with-title.png'>
+				</section>
+			</section>
+			<section>
+				<section>
+					<h3>A title with 3 Links</h3>
+					<pre>
+						<code class="language-java">
+@Component(value = "Three Links")
+public class ThreeLinks {
+
+	@DialogField(fieldLabel = "Title")
+	private final String title;
+
+	@DialogField(fieldLabel = "Link 1")
+	@DialogFieldSet(namePrefix = "link1/")
+	private final Link link1;
+
+	@DialogField(fieldLabel = "Link 2")
+	@DialogFieldSet(namePrefix = "link2/")
+	private final Link link2;
+
+	@DialogField(fieldLabel = "Link 3")
+	@DialogFieldSet(namePrefix = "link3/")
+	private final Link link3;
+
+	public ThreeLinks(SlingHttpServletRequest request) {
+		ValueMap properties = request.getResource().adaptTo(ValueMap.class);
+		title = properties.get("title", "DEFAULT TITLE");
+		link1 = new Link();
+		link1.setLinkPath(properties.get("link1/linkPath", "/content/defualtpath"));
+		link1.setLinkText(properties.get("link1/linkText", "DEFAULT LINK TITLE"));
+
+		//More Logic
+	}
+}						
+						</code>
+					</pre>
+				</section>
+				<section>
+					<h3>A title with 3 Links</h3>
+					<img class="stretch"  src='img/3link-with-title.png'>
+				</section>
+			</section>
+			<section>
+				<h2>Extending the plugin</h2>
+				<ul>
+					<li>Adding Widgets</li>
+					<li>Adding Transformers</li>
+				</ul>
+			</section>
+			<section>
+				<h2>Helpful Links</h2>
+				<a href="http://code.citytechinc.com/cq-component-maven-plugin">http://code.citytechinc.com/cq-component-maven-plugin</a>
+				<a href="https://github.com/Citytechinc/cq-component-maven-plugin">https://github.com/Citytechinc/cq-component-maven-plugin</a>
+			</sections>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				width: 1200,
+			    height: 800,
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: 'default', // available themes are in /css/theme
+			
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
