@@ -171,7 +171,7 @@ ${title.title}
 				</section>
 				
 				<section>
-					<h3>How To Use It</h3>
+					<h3>How To Use It (Maven)</h3>
 						<pre>
 							<code class="language-markup">
 &lt;plugin&gt;
@@ -190,6 +190,38 @@ ${title.title}
         &lt;defaultComponentGroup&gt;Client Group&lt;/defaultComponentGroup&gt;
     &lt;/configuration&gt;
 &lt;/plugin&gt;
+							</code>
+						</pre>
+				</section>
+				<section>
+					<h3>How To Use It (Gradle)</h3>
+						<pre>
+							<code class="language-java">
+buildscript {
+    repositories {
+       mavenLocal()
+       mavenCentral()
+    }
+    dependencies {
+       classpath group: 'com.citytechinc.cq.cq-component-plugin', name: 'cq-component-maven-plugin', version: '2.6.0'
+    }
+}
+							</code>
+						</pre>
+						<pre>
+							<code class="language-java">
+componentPlugin {
+    componentPathBase = "jcr_root/apps/project/components"
+    componentPathSuffix="content"
+    defaultComponentGroup="Project"
+    transformerName="camel-case"
+}
+
+							</code>
+						</pre>
+						<pre>
+							<code class="language-java">
+install.dependsOn generateComponents
 							</code>
 						</pre>
 				</section>
