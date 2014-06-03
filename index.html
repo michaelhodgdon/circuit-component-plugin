@@ -16,8 +16,7 @@
 
 		<link rel="stylesheet" href="css/reveal.css">
 		<link rel="stylesheet" href="css/theme/default.css" id="theme">
-		<script type="text/javascript" src="plugin/prism/js/prism.js"></script>
-		<link rel="stylesheet" href="plugin/prism/css/prism.css">
+		<link href="plugin/syntaxHighlighter/shCoreCustom.css" rel="stylesheet" type="text/css" />
 
 		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
 		<script>
@@ -56,8 +55,7 @@
 	                <section>
 						<h3>The Component's Nature</h3>
 						<h4>.content.xml</h4>
-						<pre>
-							<code class="language-markup">
+						<pre class="brush: xml">
 &lt;jcr:root xmlns:sling=&quot;http://sling.apache.org/jcr/sling/1.0&quot;
 	xmlns:cq=&quot;http://www.day.com/jcr/cq/1.0&quot;
 	xmlns:jcr=&quot;http://www.jcp.org/jcr/1.0&quot;
@@ -65,15 +63,13 @@
 	jcr:primaryType=&quot;cq:Component&quot;
 	jcr:title=&quot;Title&quot;
 	componentGroup=&quot;Client&quot;/&gt;
-						    </code>
 						</pre>
 					</section>
 					
 	                <section>
 						<h3>The Component's Authorability</h3>
 						<h4>dialog.xml</h4>
-						<pre>
-							<code class="language-markup">
+						<pre class="brush: xml">
 &lt;jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
 	jcr:primaryType="cq:Dialog" title="Title" xtype="dialog"&gt;
 	&lt;items jcr:primaryType="cq:TabPanel"&gt;
@@ -88,30 +84,27 @@
 		&lt;/items&gt;
 	&lt;/items&gt;
 &lt;/jcr:root&gt;
-						    </code>
 						</pre>
 					</section>
 					
 	                <section>
 						<h3>The Component's Editing Context</h3>
 						<h4>_cq_editConfig.xml</h4>
-						<pre>
-							<code class="language-markup">
-&lt;jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-          cq:actions="[text:Title ,-,EDITDELETE,-]"
-          cq:layout="editbar"
-          cq:dialogMode="floating"
-          jcr:primaryType="cq:EditConfig"/&gt;
+						<pre class="brush: xml">
+&lt;jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" 
+	xmlns:jcr="http://www.jcp.org/jcr/1.0"
+	cq:actions="[text:Title ,-,EDITDELETE,-]"
+	cq:layout="editbar"
+	cq:dialogMode="floating"
+	jcr:primaryType="cq:EditConfig"/&gt;
 &lt;/jcr:root&gt;
-						    </code>
 						</pre>
 					</section>
 				
 					<section>
 						<h3>The Component's Business Logic</h3>
 						<h4>Java Backing Bean</h4>
-						<pre>
-							<code class="language-java">
+						<pre class="brush: java">
 public class Title {
 	private final String title;
 	
@@ -124,22 +117,19 @@ public class Title {
 		return title;
 	}
 }
-							</code>
 						</pre>
 	          		</section>
 					
 					<section>
 						<h3>The Component's View</h3>
 						<h4>JSP</h4>
-						<pre>
-							<code class="language-markup">
+						<pre class="brush: xml">
 &lt;%@include file="/libs/foundation/global.jsp"%&gt;
 &lt;%@ page import="com.client.components.content.title.Title" %&gt;
 
 &lt;c:set var="title" value="&lt;%=new Title(slingRequest) %&gt;"/&gt;
 
 ${title.title}
-							</code>
 						</pre>
 	          		</section>
 				
@@ -172,8 +162,7 @@ ${title.title}
 				
 				<section>
 					<h3>How To Use It (Maven)</h3>
-						<pre>
-							<code class="language-markup">
+						<pre class="brush: xml">
 &lt;plugin&gt;
     &lt;groupId&gt;com.citytechinc.cq.cq-component-plugin&lt;/groupId&gt;
     &lt;artifactId&gt;cq-component-maven-plugin&lt;/artifactId&gt;
@@ -190,26 +179,23 @@ ${title.title}
         &lt;defaultComponentGroup&gt;Client Group&lt;/defaultComponentGroup&gt;
     &lt;/configuration&gt;
 &lt;/plugin&gt;
-							</code>
 						</pre>
 				</section>
 				<section>
 					<h3>How To Use It (Gradle)</h3>
-						<pre>
-							<code class="language-java">
+						<pre class="brush: groovy">
 buildscript {
     repositories {
        mavenLocal()
        mavenCentral()
     }
     dependencies {
-       classpath group: 'com.citytechinc.cq.cq-component-plugin', name: 'cq-component-maven-plugin', version: '2.6.0'
+		classpath group: 'com.citytechinc.cq.cq-component-plugin', 
+			name: 'cq-component-maven-plugin', version: '2.6.0'
     }
 }
-							</code>
 						</pre>
-						<pre>
-							<code class="language-java">
+						<pre class="brush: groovy">
 componentPlugin {
     componentPathBase = "jcr_root/apps/project/components"
     componentPathSuffix="content"
@@ -217,12 +203,9 @@ componentPlugin {
     transformerName="camel-case"
 }
 
-							</code>
 						</pre>
-						<pre>
-							<code class="language-java">
+						<pre class="brush: groovy">
 install.dependsOn generateComponents
-							</code>
 						</pre>
 				</section>
 				<section>
@@ -236,10 +219,9 @@ install.dependsOn generateComponents
 				<section>
 					<h2>Examples</h2>
 				</section>
-				<section>
+				<section data-transition="none">
 					<h3>Basic Example</h3>
-					<pre>
-						<code class="language-java">
+					<pre class="brush: java">
 @Component(value = "Title")
 public class Title {
 
@@ -255,7 +237,46 @@ public class Title {
 		return title;
 	}
 }
-						</code>
+					</pre>
+				</section>
+				<section data-transition="none">
+					<h3>Basic Example</h3>
+					<pre class="brush: java; highlight: [1]">
+@Component(value = "Title")
+public class Title {
+
+	@DialogField(fieldLabel = "Title", fieldDescription = "Our title")
+	private final String title;
+
+	public Title(SlingHttpServletRequest request) {
+		ValueMap properties = request.getResource().adaptTo(ValueMap.class);
+		this.title = properties.get("title", "DEFAULT TITLE");
+	}
+
+	public String getTitle() {
+		return title;
+	}
+}
+					</pre>
+				</section>
+				<section data-transition="none">
+					<h3>Basic Example</h3>
+					<pre class="brush: java; highlight: [4]">
+@Component(value = "Title")
+public class Title {
+
+	@DialogField(fieldLabel = "Title", fieldDescription = "Our title")
+	private final String title;
+
+	public Title(SlingHttpServletRequest request) {
+		ValueMap properties = request.getResource().adaptTo(ValueMap.class);
+		this.title = properties.get("title", "DEFAULT TITLE");
+	}
+
+	public String getTitle() {
+		return title;
+	}
+}
 					</pre>
 				</section>
 				<section>
@@ -264,20 +285,20 @@ public class Title {
 				</section>
 				<section>
 					<h3>Complex Widgets and Tabs Example</h3>
-					<pre>
-						<code class="language-java">
+					<pre class="brush: java">
 @Component(value = "Complex Example", tabs = { @Tab(title = "First tab"),
-	@Tab(path = "/libs/foundation/components/page/tab_basic.infinity.json"), @Tab(title = "Last tab") })
+	@Tab(path = "/libs/foundation/components/page/tab_basic.infinity.json"), 
+	@Tab(title = "Last tab") })
 public class CqIncludeMix {
 	@DialogField(fieldLabel = "Title", fieldDescription = "Our title", tab = 1)
 	@MultiField
 	private String title;
 
 	@DialogField(fieldLabel = "Image", tab = 3)
-	@Html5SmartImage(disableZoom = true, name = "image", allowCrop=true, allowUpload = false, tab = false, height = 150)
+	@Html5SmartImage(disableZoom = true, name = "image", allowCrop=true, 
+		allowUpload = false, tab = false, height = 150)
 	private String image;
 }	
-						</code>
 					</pre>
 				</section>
 				<section>
@@ -292,8 +313,7 @@ public class CqIncludeMix {
 					</section>
 					<section>
 						<h4>Original Title</h4>
-						<pre>
-							<code class="language-java">
+						<pre class="brush: java">
 @Component(value = "Title")
 public class Title {
 
@@ -309,13 +329,11 @@ public class Title {
 		return title;
 	}
 }
-							</code>
 						</pre>
 					</section>
 					<section>
 						<h4>Title with Link</h4>
-						<pre>
-							<code class="language-java">
+						<pre class="brush: java">
 @Component("Title With Link")
 public class TitleWithLink extends Title {
 
@@ -334,7 +352,6 @@ public class TitleWithLink extends Title {
 	}
 
 }
-						</code>
 					</pre>
 				</section>
 				<section>
@@ -348,8 +365,7 @@ public class TitleWithLink extends Title {
 			</section>
 			<section>
 				<h3>A Basic Link</h3>
-				<pre>
-					<code class="language-java">
+				<pre class="brush: java">
 public class Link {
 	@DialogField(fieldLabel = "Link Path")
 	@PathField
@@ -374,14 +390,12 @@ public class Link {
 		this.linkText = linkText;
 	}
 }
-					</code>
 				</pre>
 			</section>
 			<section>
 				<section>
 					<h3>A Link With a Title</h3>
-					<pre>
-						<code class="language-java">
+					<pre class="brush: java">
 @Component(value = "Single Link")
 public class SingleLink {
 
@@ -409,8 +423,7 @@ public class SingleLink {
 	public Link getLink() {
 		return link;
 	}
-}						
-						</code>
+}
 					</pre>
 				</section>
 				<section>
@@ -421,8 +434,7 @@ public class SingleLink {
 			<section>
 				<section>
 					<h3>A title with 3 Links</h3>
-					<pre>
-						<code class="language-java">
+					<pre class="brush: java">
 @Component(value = "Three Links")
 public class ThreeLinks {
 
@@ -450,8 +462,7 @@ public class ThreeLinks {
 
 		//More Logic
 	}
-}						
-						</code>
+}	
 					</pre>
 				</section>
 				<section>
@@ -499,6 +510,10 @@ public class ThreeLinks {
 					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
 					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
 					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/syntaxHighlighter/shCore.js', async: false, callback: function() {  } },
+					{ src: 'plugin/syntaxHighlighter/shBrushXml.js', async: false, callback: function() {  } },
+					{ src: 'plugin/syntaxHighlighter/shBrushJava.js', async: false, callback: function() {  } },
+					{ src: 'plugin/syntaxHighlighter/shBrushGroovy.js', async: false, callback: function() { SyntaxHighlighter.defaults['gutter'] = false;SyntaxHighlighter.all() } },
 					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
 					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
 				]
