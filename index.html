@@ -42,7 +42,7 @@
 			<div class="slides">
 				<section>
 					<h1>CQ Component Plugin</h1>
-					<h3>Code More, Configure Less</h3>
+					<h2 class="fragment">or<br/>How I lost my XML</h2>
 					<p>
 						<small>By Michael Hodgdon</small>
 					</p>
@@ -166,7 +166,7 @@ ${title.title}
 &lt;plugin&gt;
     &lt;groupId&gt;com.citytechinc.cq.cq-component-plugin&lt;/groupId&gt;
     &lt;artifactId&gt;cq-component-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;2.6f.0&lt;/version&gt;
+    &lt;version&gt;2.6.0&lt;/version&gt;
     &lt;executions&gt;
         &lt;execution&gt;
             &lt;goals&gt;
@@ -279,6 +279,25 @@ public class Title {
 }
 					</pre>
 				</section>
+				<section data-transition="none">
+					<h3>Basic Example</h3>
+					<pre class="brush: java; highlight: [10]">
+@Component(value = "Title")
+public class Title {
+
+	private final ValueMap properties;
+
+	public Title(SlingHttpServletRequest request) {
+		properties = request.getResource().adaptTo(ValueMap.class);
+	}
+
+	@DialogField(fieldLabel = "Title", fieldDescription = "Our title")
+	public String getTitle() {
+		return properties.get("title", "DEFAULT TITLE");;
+	}
+}
+					</pre>
+				</section>
 				<section>
 					<h3>Basic Example</h3>
 					<img class="stretch"  src='img/basic_title_dialog.png'>
@@ -286,10 +305,10 @@ public class Title {
 				<section>
 					<h3>Complex Widgets and Tabs Example</h3>
 					<pre class="brush: java">
-@Component(value = "Complex Example", tabs = { @Tab(title = "First tab"),
+@Component(value = "Mixed Tabs", tabs = { @Tab(title = "First tab"),
 	@Tab(path = "/libs/foundation/components/page/tab_basic.infinity.json"), 
 	@Tab(title = "Last tab") })
-public class CqIncludeMix {
+public class MixedTabs {
 	@DialogField(fieldLabel = "Title", fieldDescription = "Our title", tab = 1)
 	@MultiField
 	private String title;
