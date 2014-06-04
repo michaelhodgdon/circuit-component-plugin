@@ -152,11 +152,11 @@ ${title.title}
 				<section>
 					<h3>What is the CQ Component Plugin?</h3>
 					<p>
-						The CQ Component Plugin is a Maven plugin that uses annotations inside of the backing beans for components to create the required XML files for a component.</p>
+						The CQ Component Plugin is a Maven/Gradle plugin that uses annotations inside of the backing beans for components to create the required XML files for a component.</p>
 				</section>
 				
 				<section>
-					<h3>Example</h3>
+					<h3>Overview</h3>
 					<img src='img/component_example.png'>
 				</section>
 				
@@ -198,9 +198,7 @@ buildscript {
 						<pre class="brush: groovy">
 componentPlugin {
     componentPathBase = "jcr_root/apps/project/components"
-    componentPathSuffix="content"
-    defaultComponentGroup="Project"
-    transformerName="camel-case"
+    defaultComponentGroup="Client Group"
 }
 
 						</pre>
