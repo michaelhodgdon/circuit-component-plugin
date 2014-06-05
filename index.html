@@ -488,17 +488,157 @@ public class ThreeLinks {
 				</section>
 			</section>
 			<section>
+				<section>
+					<h3>A title with unlimited Links</h3>
+					<pre class="brush: java">
+@Component(value = "Multi Links")
+public class MultiLinks {
+
+	@DialogField(fieldLabel = "Title")
+	private final String title;
+
+	@DialogField
+	@DialogFieldSet
+	@MultiCompositeField
+	private final List<Link> links;
+
+	public MultiLinks(SlingHttpServletRequest request) {
+		ValueMap properties = request.getResource().adaptTo(ValueMap.class);
+		title = properties.get("title", "DEFAULT TITLE");
+		links = new ArrayList<Link>();
+
+		Iterable<Resource> resources = request.getResource().getChild("links").getChildren();
+		for (Resource r : resources) {
+			ValueMap linkProps = r.adaptTo(ValueMap.class);
+			String path = linkProps.get("linkPath", "/content/defualtpath");
+			String linkText = linkProps.get("linkText", "DEFAULT LINK TITLE");
+			Link link = new Link();
+			link.setLinkPath(path);
+			link.setLinkText(linkText);
+			links.add(link);
+
+		}
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public List<Link> getLinks() {
+		return links;
+	}
+}	
+					</pre>
+				</section>
+				<section>
+					<h3>A title with unlimited Links</h3>
+					<img class="stretch"  src='img/unlimited-link-with-title.png'>
+				</section>
+			</section>
+			<section>
 				<h2>Extending the plugin</h2>
 				<ul>
-					<li>Adding Widgets</li>
-					<li>Adding Transformers</li>
+					<li class="fragment">Adding Widgets</li>
+					<li class="fragment">Adding Transformers</li>
 				</ul>
+			</section>
+			<section>
+				<section>
+					<h3>Adding a widget</h3>
+					<h4>The annotation</h4>
+					<pre class="brush: java">
+@Retention(RetentionPolicy.CLASS)
+@Target({ ElementType.METHOD, ElementType.FIELD })
+public @interface MultiCompositeField {
+
+	boolean matchBaseName() default false;
+
+	String prefix() default "./";
+}
+					</pre>
+				</section>
+				<section>
+					<h3>Adding a widget</h3>
+					<h4>The Maker</h4>
+					<pre class="brush: java">
+public final class MultiCompositeFieldWidgetMaker extends AbstractWidgetMaker {
+
+	private static final String FIELD_CONFIGS = "fieldConfigs";
+
+	public MultiCompositeFieldWidgetMaker(WidgetMakerParameters parameters) {
+		super(parameters);
+	}
+
+	@Override
+	public DialogElement make() throws ClassNotFoundException, SecurityException, InvalidComponentFieldException,
+		NotFoundException, CannotCompileException, NoSuchFieldException, InstantiationException,
+		IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+		MultiCompositeField multiCompositeFieldAnnotation = getAnnotation(MultiCompositeField.class);
+
+		MultiCompositeFieldWidgetParameters widgetParameters = new MultiCompositeFieldWidgetParameters();
+
+		widgetParameters.setMatchBaseName(multiCompositeFieldAnnotation.matchBaseName());
+		widgetParameters.setPrefix(multiCompositeFieldAnnotation.prefix());
+		widgetParameters.setFieldName(getFieldNameForField());
+		widgetParameters.setFieldLabel(getFieldLabelForField());
+		widgetParameters.setFieldDescription(getFieldDescriptionForField());
+		widgetParameters.setAdditionalProperties(getAdditionalPropertiesForField());
+		widgetParameters.setHideLabel(getHideLabelForField());
+		widgetParameters.setName(getNameForField());
+		widgetParameters.setAllowBlank(!getIsRequiredForField());
+		widgetParameters.setDefaultValue(getDefaultValueForField());
+		widgetParameters.setListeners(getListeners());
+		widgetParameters.setContainedElements(buildWidgetCollection(multiCompositeFieldAnnotation));
+
+		return new MultiCompositeFieldWidget(widgetParameters);
+	}
+	
+	.
+	.
+	.
+}
+					</pre>
+				</section>
+				<section>
+					<h3>Adding a widget</h3>
+					<h4>The widget</h4>
+					<pre class="brush: java">
+@Widget(annotationClass = MultiCompositeField.class, 
+	makerClass = MultiCompositeFieldWidgetMaker.class, 
+	xtype = MultiCompositeFieldWidget.XTYPE)
+public final class MultiCompositeFieldWidget extends AbstractWidget {
+
+	public static final String XTYPE = "multicompositefield";
+
+	private final boolean matchBaseName;
+
+	private final String prefix;
+
+	public MultiCompositeFieldWidget(MultiCompositeFieldWidgetParameters parameters) {
+		super(parameters);
+		this.matchBaseName = parameters.isMatchBaseName();
+		this.prefix = parameters.getPrefix();
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public boolean isMatchBaseName() {
+		return matchBaseName;
+	}
+}
+					</pre>
+				</section>
 			</section>
 			<section>
 				<h2>Helpful Links</h2>
 				<a href="http://code.citytechinc.com/cq-component-maven-plugin">http://code.citytechinc.com/cq-component-maven-plugin</a>
 				<a href="https://github.com/Citytechinc/cq-component-maven-plugin">https://github.com/Citytechinc/cq-component-maven-plugin</a>
-			</sections>
+			</section>
+			<section>
+				<img class="stretch"  src='img/keep-calm-and-ask-me-questions.png'>
+			</section>
 		</div>
 
 		<script src="lib/js/head.min.js"></script>
